@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>数字占卜 - 傅佩荣校订版</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #0f0f0f url('https://www.transparenttextures.com/patterns/stardust.png');
+            color: #f0e68c;
+            font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            min-height: 100vh;
+            margin: 0;
+            font-size: 16px;
+        }
+        .container {
+            max-width: 100%;
+            width: 100%;
+            text-align: center;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 25px 15px;
+            border-radius: 15px;
+            background: rgba(20, 20, 20, 0.85);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        h1 {
+            color: #d4af37;
+            font-size: 32px;
+            letter-spacing: 6px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5), 0 0 20px rgba(212, 175, 55, 0.3);
+            padding: 15px 0;
+            border-top: 2px solid rgba(212, 175, 55, 0.4);
+            border-bottom: 2px solid rgba(212, 175, 55, 0.4);
+            position: relative;
+        }
+        h1::before {
+            content: '☰';
+            position: absolute;
+            left: 10px;
+            font-size: 24px;
+            opacity: 0.6;
+        }
+        h1::after {
+            content: '☷';
+            position: absolute;
+            right: 10px;
+            font-size: 24px;
+            opacity: 0.6;
+        }
+        .subtitle {
+            font-size: 15px;
+            color: #a0937d;
+            margin-bottom: 25px;
+            line-height: 1.8;
+        }
+        .subtitle b {
+            color: #d4af37;
+            font-size: 16px;
+        }
+        .input-group {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        input {
+            width: 30%;
+            min-width: 90px;
+            padding: 16px 8px;
+            border: 2px solid #555;
+            background: rgba(40, 40, 40, 0.8);
+            color: #fff;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+        input:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+        /* 隐藏数字输入框的上下箭头 */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+        button.main-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+            color: #1a1a1a;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+        button.main-btn:active {
+            transform: scale(0.98);
+        }
+        #result {
+            margin-top: 25px;
+            padding: 20px 15px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            font-size: 16px;
+            line-height: 1.8;
+        }
+        #result strong {
+            font-size: 28px;
+        }
+        #result p {
+            font-size: 18px;
+        }
+        .line-yang {
+            height: 10px;
+            width: 160px;
+            margin: 10px auto;
+            background: #d4af37;
+            border-radius: 5px;
+        }
+        .line-yin {
+            height: 10px;
+            width: 160px;
+            margin: 10px auto;
+            display: flex;
+            justify-content: space-between;
+        }
+        .line-yin div {
+            width: 70px;
+            height: 10px;
+            background: #d4af37;
+            border-radius: 5px;
+        }
+        .consult-btn {
+            width: 100%;
+            padding: 14px;
+            margin-top: 20px;
+            background: rgba(100, 100, 100, 0.5);
+            color: #d4af37;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        .consult-btn:active {
+            transform: scale(0.98);
+        }
+        #qrcode-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        #qrcode-modal.show {
+            display: flex;
+        }
+        .qrcode-content {
+            background: rgba(30, 30, 30, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            border: 2px solid rgba(212, 175, 55, 0.5);
+            max-width: 90%;
+        }
+        .qrcode-content h2 {
+            color: #d4af37;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+        .qrcode-content p {
+            color: #a0937d;
+            margin-bottom: 20px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .qrcode-placeholder {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #666;
+        }
+        .close-btn {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: #d4af37;
+            color: #1a1a1a;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .action-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .category-label {
+            color: #a0937d;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        .category-select-small {
+            padding: 10px 30px 10px 12px;
+            background: rgba(60, 60, 60, 0.8);
+            color: #d4af37;
+            border: 2px solid rgba(212, 175, 55, 0.5);
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url("data:image/svg+xml;utf8,<svg fill='%23d4af37' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 18px;
+            min-width: 90px;
+        }
+        .category-select-small:focus {
+            border-color: #d4af37;
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+        }
+        .category-select-small option {
+            background: #2a2a2a;
+            color: #d4af37;
+            padding: 8px;
+        }
+        .main-btn-small {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%);
+            color: #1a1a1a;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            box-shadow: 0 3px 10px rgba(212, 175, 55, 0.3);
+            white-space: nowrap;
+        }
+        .main-btn-small:active {
+            transform: scale(0.98);
+        }
+        /* 移动端优化 */
+        @media (max-width: 400px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 20px 12px;
+            }
+            h1 {
+                font-size: 28px;
+                letter-spacing: 4px;
+            }
+            h1::before,
+            h1::after {
+                font-size: 20px;
+                left: 5px;
+            }
+            h1::after {
+                right: 5px;
+                left: auto;
+            }
+            .subtitle {
+                font-size: 14px;
+                margin-bottom: 20px;
+            }
+            .input-group {
+                gap: 6px;
+            }
+            input {
+                width: 31%;
+                min-width: 85px;
+                padding: 14px 6px;
+                font-size: 18px;
+            }
+            .action-row {
+                gap: 8px;
+                margin: 15px 0;
+            }
+            .category-label {
+                font-size: 13px;
+                width: 100%;
+                margin-bottom: 5px;
+            }
+            .category-select-small {
+                font-size: 14px;
+                padding: 12px 28px 12px 10px;
+                flex: 1;
+            }
+            .main-btn-small {
+                font-size: 15px;
+                padding: 12px 20px;
+                flex: 1;
+            }
+            #result {
+                padding: 15px 10px;
+                margin-top: 20px;
+            }
+            #result strong {
+                font-size: 24px;
+            }
+            #result p {
+                font-size: 16px;
+            }
+            .line-yang {
+                width: 140px;
+                height: 9px;
+                margin: 8px auto;
+            }
+            .line-yin {
+                width: 140px;
+                height: 9px;
+                margin: 8px auto;
+            }
+            .line-yin div {
+                width: 61px;
+                height: 9px;
+            }
+            .consult-btn {
+                font-size: 14px;
+                padding: 12px;
+            }
+        }
+        /* 中等屏幕优化 (401px - 767px) */
+        @media (min-width: 401px) and (max-width: 767px) {
+            .container {
+                padding: 25px 20px;
+            }
+            .line-yang {
+                width: 180px;
+            }
+            .line-yin {
+                width: 180px;
+            }
+            .line-yin div {
+                width: 78px;
+            }
+        }
+        @media (min-width: 768px) {
+            .container {
+                max-width: 450px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>数字占卜</h1>
+        <div class="subtitle">心中默念所求之事<br>请输入三组<b>三位数字</b>（如：873）</div>
+        <div class="input-group">
+            <input type="number" id="numA" placeholder="三位数" min="100" max="999" maxlength="3">
+            <input type="number" id="numB" placeholder="三位数" min="100" max="999" maxlength="3">
+            <input type="number" id="numC" placeholder="三位数" min="100" max="999" maxlength="3">
+        </div>
+
+        <div class="action-row">
+            <span class="category-label">请选择占卜类别</span>
+            <select id="category-select" class="category-select-small" onchange="selectCategory(this.value)">
+                <option value="时运">时运</option>
+                <option value="财运">财运</option>
+                <option value="家宅">家宅</option>
+                <option value="身体">身体</option>
+            </select>
+            <button class="main-btn-small" onclick="calculate()">开启占卜</button>
+        </div>
+        <div id="result"></div>
+        <button class="consult-btn" onclick="showQRCode()">数字占卜用于日常小事<br>人生大事请用蓍草占卜</button>
+    </div>
+
+    <!-- 二维码弹窗 -->
+    <div id="qrcode-modal" onclick="closeQRCode()">
+        <div class="qrcode-content" onclick="event.stopPropagation()">
+            <h2>蓍草占卜咨询</h2>
+            <p>扫描二维码<br>添加微信咨询</p>
+            <div class="qrcode-placeholder">
+                请将您的微信二维码<br>图片放在这里
+            </div>
+            <button class="close-btn" onclick="closeQRCode()">关闭</button>
+        </div>
+    </div>
+
+    <script src="script.js?v=5"></script>
+</body>
+</html>
